@@ -1,6 +1,6 @@
 # SDD 憲章：部署與基礎設施延伸（DEP）
 
-> 版本：5.1.0｜本文件為 [`constitution.md`](constitution.md) 之延伸，**須與核心原則（CP）、治理（GV）一併適用**。
+> 版本：5.4.0｜本文件為 [`constitution.md`](constitution.md) 之延伸，**須與核心原則（CP）、治理（GV）一併適用**。
 > RFC 2119 用語定義見核心文件。條款前綴為 `§DEP-`。
 
 > **邊界聲明**：本檔規範**部署與基礎設施**（橫切維度，適用所有自建可部署服務）。各應用的**應用面**見 API / FE / SH；**跨服務治理**見 [`constitution-microservice.md`](constitution-microservice.md)（SVC）。
@@ -20,7 +20,7 @@
 ### §DEP-2 容器化通則（Containerization）
 
 - 自行開發、需部署的服務 **MUST** 容器化：提供 **Dockerfile**，產出可重現的 OCI 映像。
-- 映像 **MUST** 以 **non-root** 使用者執行；**SHOULD** 採最小基底映像；Critical / Standard **MUST** 通過容器映像安全掃描（見附錄 B）。
+- 映像 **MUST** 以 **non-root** 使用者執行；**SHOULD** 採最小基底映像；容器映像安全掃描依附錄 B：Critical **MUST**、Standard **SHOULD** 通過。
 - **長駐服務** **MUST** 提供 **health / readiness / liveness** 探針並支援 **graceful shutdown**（收到終止訊號後完成在途工作、釋放資源）；應用端點行為見 §API-7，本節規範其作為部署探針之使用。
 - **一次性 / 批次工具** **MUST** 以明確 exit code 表示成敗（呼應 §SH-3）。
 - 設定與機密 **MUST** 由環境變數注入（§CP-2、§CP-3），**MUST NOT** 烘焙進映像；啟動時 **SHOULD** 驗證必要設定存在。

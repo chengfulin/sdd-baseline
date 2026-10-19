@@ -38,7 +38,7 @@
 | **API** | API 服務應用面 | [`constitution-api.md`](constitution-api.md) | **階段二** |
 | **FE** | 前端應用面 | [`constitution-frontend.md`](constitution-frontend.md) | **階段二** |
 | **SH** | Shell Script 應用面 | [`constitution-shell.md`](constitution-shell.md) | **階段二** |
-| **SVC** | 跨服務治理（契約 / 事件 / 追蹤 / 韌性 / 資料邊界 / 並行）| [`constitution-microservice.md`](constitution-microservice.md) | **階段三** |
+| **SVC** | 跨服務治理（契約 / 事件 / 追蹤 / 韌性 / 資料邊界 / 並行 / 生命週期）| [`constitution-microservice.md`](constitution-microservice.md) | **階段三** |
 | **DEP** | 部署與基礎設施（容器 / Compose / 第三方 / DB / 儲存 / 代理）| [`constitution-deployment.md`](constitution-deployment.md) | **階段三** |
 | 技術建議 | 框架 / 工具選型（非強制）| [`tech-standards.md`](tech-standards.md) | 全程參考 |
 
@@ -79,7 +79,7 @@
 - 此階段不要求覆蓋率數字，只要求**核心邏輯有測試且通過**。
 
 ### 參考（暫不強制）
-TR、風險分級、API/FE/SH、SVC、DEP 可先瀏覽，但**本階段不作為合併條件**。
+TR、風險分級、API/FE/SH、SVC、DEP 可先瀏覽，但**本階段不作為合併條件**。風險分級的標示在本階段為 **SHOULD**（建議先標，便於晉級），自第二階段起為 MUST。
 
 ### 進入第二階段的條件
 - 團隊已習慣「無 spec 不動工」、PR 連結需求來源。
@@ -119,13 +119,14 @@ SVC、DEP 可先讀，本階段不作為合併條件（除非該服務已是微�
 
 ### 進入第三階段的條件
 - 各服務已標示風險分級並依 TR 執行；TDD（由驗收條件寫測試）成為常態。
-- 應用層規範（API/FE/SH）落地，CI 已納入 test + lint + 機密掃描。
+- 應用層規範（API/FE/SH）落地，CI 已納入 test + lint + 機密掃描（Critical / Standard 另含相依套件安全掃描）。
 
 ### 第二階段 PR 檢查清單（疊加於第一階段）
 - [ ] 已標示服務風險分級
+- [ ] 若為新功能 / 修改功能，spec/plan 已宣告影響範圍（§TR-8）
 - [ ] 依 §TR-2 完成對應分級的測試組合
 - [ ] 符合對應應用憲章（API / FE / SH）
-- [ ] CI 自動閘門：測試、lint、機密掃描通過（§GV-3）
+- [ ] CI 自動閘門：測試、lint、機密掃描通過（§GV-3）；Critical / Standard 另須相依套件安全掃描通過（§TR-3）
 
 ---
 
@@ -167,5 +168,5 @@ SVC、DEP 可先讀，本階段不作為合併條件（除非該服務已是微�
 
 ## 六、維護
 
-- 本憲章修訂依 §GV-1（SemVer）：MAJOR 重新定義原則或重編識別碼；MINOR 新增 / 擴充；PATCH 文字釐清。
+- 本憲章修訂依 §GV-1（SemVer）：MAJOR 移除 / 重新定義原則或重編識別碼；MINOR 新增 / 擴充；PATCH 文字釐清。
 - 條款引用請用前綴式 ID（如 `§CP-2`、`§SVC-5`），勿用舊式章節號。

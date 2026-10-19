@@ -1,6 +1,6 @@
 # Spec-Driven Development 憲章（核心通用版）
 
-> 版本：5.1.0｜狀態：生效中｜適用範圍：所有應用類型與服務風險分級
+> 版本：5.4.0｜狀態：生效中｜適用範圍：所有應用類型與服務風險分級
 >
 > 本文件為**最高層級規範**。所有 spec、plan、task 與實作皆須遵循本憲章。
 > 當下層文件（spec / plan / 程式碼）與本憲章衝突時，**以本憲章為準**。
@@ -33,6 +33,9 @@
 
 > 凡**容器化部署**之自建服務（含前端、工具服務），一律加載 DEP。
 > 技術選型（框架、語言）非本憲章強制項，建議另見 [`tech-standards.md`](tech-standards.md)（團隊技術標準建議）。
+
+> **載入 ≠ 全部強制**：上表定義「該讀哪些文件」；各條款**實際作為合併條件的範圍，由團隊「目前導入階段」決定**（見 [`README.md`](README.md) 三階段導入）。第一階段僅 **§CP-1～§CP-6 + 最小審查（GV）** 為必要條件，其餘載入內容以參考視之。
+> 本聲明與前言「衝突時以本憲章為準」屬**不同維度**：前言界定憲章對下層文件（spec / plan / 程式碼）的效力位階；本聲明界定憲章條款中**目前**作為合併門檻的子集，兩者並不衝突。
 
 ---
 
@@ -74,7 +77,7 @@
 **解說**：專案類型描述「成熟度 / 意圖」，風險分級描述「出錯的後果」。兩者通常相關（POC 多為 Experimental、正式專案多為 Standard），但驅動規範強度的是**風險**。例如一個「POC」若直接讀寫正式個資庫，應以 Critical 對待；一個「正式專案」若只是內部唯讀儀表板，可降為 Internal。
 
 規則：
-- 每個服務 / 專案 **MUST** 在 README 或 spec 標示其**風險分級**（並建議註明對應的團隊專案類型）。
+- 每個服務 / 專案 **MUST** 在 README 或 spec 標示其**風險分級**（並建議註明對應的團隊專案類型）。此要求依導入階段漸進（見 [`README.md`](README.md) 三階段導入）：第一階段為 **SHOULD**，自第二階段起為 **MUST**。
 - 風險**提升**時，**MUST** 在 spec / PR 補齊新分級對應的延伸要求。
 - 未標示 → 預設以 **Standard** 處理；若無法判定且可能涉及敏感資料 → 以 **Critical** 處理。
 
@@ -146,6 +149,7 @@
 
 - 覆蓋率為**輔助指標，MUST NOT 作為唯一品質門檻**。僅對 API 服務適用數字參考：Critical / Standard **SHOULD** 達 statement ≥ 80%、branch ≥ 60%，且 **SHOULD** 優先要求 contract、核心 domain 與錯誤路徑測試，而非堆疊低價值測試衝高覆蓋率。
 - **Shell Script 與前端應用不套用數字覆蓋率門檻**，以「主要邏輯、邊界與例外案例通過」為準（見 §SH-4、§FE-7）。
+- **測試品質驗證**：Critical / Standard **SHOULD** 以 mutation testing 衡量測試的偵錯力——mutation score 衡量「殺得死錯誤」，較覆蓋率的「執行過」更能反映斷言品質；存活的 mutants **SHOULD** 作為補強測試案例的具體目標。本項為**週期性 / 抽樣式**品質驗證手段，非每次 PR 之強制閘門；主要適用於有成熟 mutation testing 工具支援之語言（如 API 服務），工具選型建議見 [`tech-standards.md`](tech-standards.md)。
 - 單元測試之**案例設計方法**（輸入空間分割）見 §TR-7。
 
 ### §TR-3 相依套件安全（Dependency Security）
@@ -178,17 +182,32 @@
 - 上述範圍內之單元測試案例 **MUST**（Critical / Standard）/ **SHOULD**（Internal）/ **MAY**（Experimental）以**輸入空間分割（ISP, Input Space Partitioning）**方法設計：
   1. 識別受測單元的輸入空間**特徵（characteristics）**：參數、相依狀態、環境設定等會影響行為的輸入。
   2. 將每個特徵分割為**互斥區塊（blocks）**；分割方式**視特徵型別適用**——數值 / 有序型涵蓋有效值、無效值與邊界值；布林 / 列舉等離散型以等值類劃分即可。
-  3. 涵蓋準則以 **Each Choice** 為下限：每個 block 至少被一個測試案例涵蓋；有意省略的 block **SHOULD** 於 spec / PR 註明理由。
+  3. 涵蓋準則以 **Each Choice** 為下限：每個 block 至少被一個測試案例涵蓋；有意省略的 block **SHOULD** 於 spec / PR 註明理由。特徵間**互動風險高**（如旗標 × 狀態的組合共同決定行為）時，該組特徵 **SHOULD** 升級至 Pairwise 或 Base Choice。
+- **預期結果以 spec 為據（oracle 來源）**：分割表與測試案例的預期結果 **MUST**（Critical）/ **SHOULD**（Standard / Internal）/ **MAY**（Experimental）自 spec / 需求導出，而非現有實作；為既有程式碼事後補測試時，無 spec 依據、僅鎖定現狀行為的斷言 **SHOULD** 標註為 characterization test（形式不拘，如測試名稱或註解），以免將潛在缺陷鎖成預期行為。
 - 本條 **MUST NOT** 被用於堆疊低價值測試案例；案例價值優先序仍依 §TR-2。
 - 測試案例 **SHOULD** 可看出對應的分割依據（如以測試名稱或註解標明「特徵＝區塊」，形式不拘）。
-- 分割結果 **SHOULD** 以簡表記錄於 spec 或測試檔開頭註解，例如：
+- 分割結果 **SHOULD** 以簡表（特徵 / blocks / 邊界值 / 涵蓋準則）記錄於 spec 或測試檔開頭註解供審查——審查焦點為分割表**存在且內容合理**；工作流上建議**先產出分割表、審閱後再生成測試碼**（時序為工作流建議，非審查判準）。例如：
 
   | 特徵 | blocks | 代表案例 |
   |------|--------|---------|
   | `amount` | 正數 / 0 / 負數 / 超過上限 | `amount=負數 → 拒絕` |
   | `token` 狀態 | 有效 / 已過期 / 格式錯誤 | `token=已過期 → 401` |
 
+  （涵蓋準則：Each Choice；邊界值列於各特徵之 blocks 中）
+
 - 本條規範**案例設計方法**；測試類型組合見 §TR-2，驗收條件對應見 §TR-1。
+
+### §TR-8 變更影響範圍宣告（Change Scope Declaration）
+
+- **適用範圍**：規劃新功能或修改現有功能的 tech plan / task 時。
+- 規劃時 **SHOULD**（Critical / Standard）/ **MAY**（Internal / Experimental）先宣告預計修改的程式架構範圍，至少涵蓋：**受影響的模組、分層**（見 §API-4）、**主要檔案區域**，以及**明確不受影響的範圍**。宣告旨在使 AI agent 與實作者聚焦，避免改動毫不相關之內容。
+- diff 不得包含與 spec 無關之變更；超出已宣告範圍的修改視同 §CP-1 所禁止之無來源變更，**MUST** 回溯更新 spec，或依 §CP-6 記為例外。
+- 宣告結果可作為 §TR-7 ISP 案例設計的受測單元清單。
+- 宣告無固定格式，下列為最小參考範本：
+
+      受影響模組：<領域名稱>
+      變更分層：<Application / Domain / Infrastructure>（見 §API-4）
+      不受影響：<明確排除的模組或服務>
 
 ---
 
@@ -215,8 +234,12 @@
 
 **B. 人工審查清單（PR 審查者 MUST 逐項確認）——無法完全自動化者：**
 
+> 清單項目對應之條款於**該服務分級**為 SHOULD / MAY 時，「確認」指確認其**已落實、已於 spec / PR 記載不遵循之理由、或屬 §GV-2 預設豁免**，而非將該條款升級為強制達成；於該分級為 MUST 者，未遵循仍須依 §GV-2 例外處理。
+
 - spec 與實作是否一致；
 - 架構責任分離是否合理、分層是否混雜；
+- 變更範圍是否收斂：diff 是否僅含與 spec 相關之變更，無夾帶無關修改（scope creep）（見 §TR-8）；
+- 單元測試案例設計是否附分割表、預期結果是否以 spec 為據（見 §TR-7）；
 - 例外是否可接受且已記錄（§GV-2）；
 - 可觀測性（log / trace / metric）是否足夠；
 - 資料邊界 / 所有權是否正確（見 §SVC-6）；
@@ -251,6 +274,9 @@
 | 每個驗收條件對應測試 | MUST | MUST | SHOULD | MAY | §TR-1 |
 | 風險導向測試組合（unit/contract/integration…）| 見 §TR-2 | 見 §TR-2 | 見 §TR-2 | 見 §TR-2 | §TR-2 |
 | 核心邏輯單元測試案例以 ISP 設計（方法）| MUST | MUST | SHOULD | MAY | §TR-7 |
+| 單元測試預期結果以 spec 為據（oracle）| MUST | SHOULD | SHOULD | MAY | §TR-7 |
+| Mutation testing 驗證測試品質（週期性；限有成熟工具之語言）| SHOULD | SHOULD | MAY | — | §TR-2 |
+| 變更影響範圍宣告 | SHOULD | SHOULD | MAY | MAY | §TR-8 |
 | 覆蓋率參考（API：stmt≥80/branch≥60）| SHOULD | SHOULD | — | — | §TR-2 |
 | Lint / 靜態分析 | MUST | MUST | SHOULD | MAY | §GV-3 |
 | 機密掃描（自動，CI）| MUST | MUST | SHOULD | SHOULD | §CP-2¹ |
