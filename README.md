@@ -111,7 +111,8 @@ TR、風險分級、API/FE/SH、SVC、DEP 可先瀏覽，但**本階段不作為
   - Critical：unit + contract + integration + 失敗路徑 + 資料遷移測試
   - Standard：unit + contract + 關鍵 integration
   - Internal：核心 unit + smoke
-  - Experimental：PR 描述驗收即可
+  - Experimental：PR 描述驗收即可；具核心商業邏輯者仍依 §CP-4 補最小單元測試
+- **案例設計**（§TR-7）：核心邏輯單元測試以輸入空間分割（ISP）設計（Critical / Standard MUST、Internal SHOULD）；預期結果以 spec 為據（Critical MUST，Standard / Internal SHOULD）。
 - 覆蓋率僅作輔助參考（API 建議 statement ≥ 80% / branch ≥ 60%），**不得作為唯一品質門檻**。
 
 ### 參考（暫不強制）
@@ -123,8 +124,9 @@ SVC、DEP 可先讀，本階段不作為合併條件（除非該服務已是微�
 
 ### 第二階段 PR 檢查清單（疊加於第一階段）
 - [ ] 已標示服務風險分級
-- [ ] 若為新功能 / 修改功能，spec/plan 已宣告影響範圍（§TR-8）
+- [ ] 變更範圍收斂：diff 僅含與 spec 相關之變更（§CP-1）；新功能 / 修改功能建議宣告影響範圍（§TR-8，Critical / Standard 為 SHOULD）
 - [ ] 依 §TR-2 完成對應分級的測試組合
+- [ ] 核心邏輯單元測試之案例設計符合分級要求（§TR-7；分割表建議附於 spec 或測試檔）
 - [ ] 符合對應應用憲章（API / FE / SH）
 - [ ] CI 自動閘門：測試、lint、機密掃描通過（§GV-3）；Critical / Standard 另須相依套件安全掃描通過（§TR-3）
 
@@ -145,7 +147,7 @@ SVC、DEP 可先讀，本階段不作為合併條件（除非該服務已是微�
 
 ### 第三階段 PR 檢查清單（疊加於前兩階段）
 - [ ] 契約已版本化，CI 檢查破壞性變更（§SVC-2）
-- [ ] 關鍵服務具追蹤（§SVC-4）與韌性（§SVC-5）；資料所有權清楚（§SVC-6）
+- [ ] 跨服務請求傳遞 trace context（§SVC-4）；關鍵服務具韌性（§SVC-5）；資料所有權清楚（§SVC-6）
 - [ ] 並行安全：避免 race condition（§SVC-8）
 - [ ] 容器化 + compose 可一鍵啟動（§DEP-2、§DEP-3）；第三方映像版本鎖定（§DEP-4）
 - [ ] DB 連線 / 檔案儲存外部化（§DEP-5、§DEP-6）；反向代理責任分界清楚（§DEP-7）

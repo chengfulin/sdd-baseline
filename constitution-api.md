@@ -1,6 +1,6 @@
 # SDD 憲章：API 服務延伸（API）
 
-> 版本：5.4.0｜本文件為 [`constitution.md`](constitution.md) 之延伸，**須與核心原則（CP）、治理（GV）一併適用**。
+> 版本：5.5.0｜本文件為 [`constitution.md`](constitution.md) 之延伸，**須與核心原則（CP）、治理（GV）一併適用**。
 > RFC 2119 用語定義見核心文件。條款前綴為 `§API-`。
 
 > **邊界聲明**：本檔只規範 API 服務的**對外應用面**（HTTP REST / WebSocket 的設計與行為）。**跨服務治理**（內部 gRPC / MQ / 事件契約、相容性、追蹤、韌性、資料邊界）見 [`constitution-microservice.md`](constitution-microservice.md)（SVC）；**部署與基礎設施**（容器、Compose、TLS、反向代理、CORS 落點）見 [`constitution-deployment.md`](constitution-deployment.md)（DEP）。
@@ -15,7 +15,7 @@
 
 - 本服務的**對外介面**——即提供給其他服務 / 用戶端串接者——以 **HTTP REST** 與 **WebSocket** 為主，是本服務的**主要對外契約**，§API-1 至 §API-11 適用之。
 - 服務在處理自身商務邏輯時，**可能**需透過 **gRPC** 或 **訊息佇列（MQ）/ 事件** 與其他內部服務溝通；此類**內部通訊**之契約與治理見 §SVC-2（契約）、§SVC-3（事件）。
-- 各條款**依通訊型態適用**：HTTP REST 適用 §API-1、§API-2、§API-8、§API-9、§API-10；WebSocket 適用 §API-11；內部 gRPC / MQ 不套用 REST / OpenAPI / CORS 等 HTTP 專屬條款，改依其對應 schema 契約（見 SVC）。
+- 各條款**依通訊型態適用**：§API-3～§API-7 為共通條款，HTTP REST 與 WebSocket 皆適用（§API-3 僅限提供互動式文件時；§API-7 適用長駐服務）；HTTP REST 另適用 §API-1、§API-2、§API-8、§API-9、§API-10；WebSocket 另適用 §API-2、§API-11；內部 gRPC / MQ 不套用 REST / OpenAPI / CORS 等 HTTP 專屬條款，改依其對應 schema 契約（見 SVC）。
 
 ### §API-1 RESTful 設計（HTTP REST API）
 
