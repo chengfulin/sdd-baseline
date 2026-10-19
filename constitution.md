@@ -1,6 +1,6 @@
 # Spec-Driven Development 憲章（核心通用版）
 
-> 版本：5.4.0｜狀態：生效中｜適用範圍：所有應用類型與服務風險分級
+> 版本：5.5.0｜狀態：生效中｜適用範圍：所有應用類型與服務風險分級
 >
 > 本文件為**最高層級規範**。所有 spec、plan、task 與實作皆須遵循本憲章。
 > 當下層文件（spec / plan / 程式碼）與本憲章衝突時，**以本憲章為準**。
@@ -25,13 +25,13 @@
 | 我的專案是… | 須載入文件 |
 |------------|-----------|
 | 任何應用（共通基線）| 本檔（CP + TR + GV + 附錄）|
-| API 服務 | 本檔 + API |
+| API 服務 | 本檔 + API + DEP |
 | 微服務（後端服務）| 本檔 + API + SVC + DEP |
 | 工具服務（Python / Shell，容器化）| 本檔 + DEP（+ SH 若以 shell 實作；+ API 若對外提供 API）|
 | Shell Script | 本檔 + SH |
-| 前端網頁應用 | 本檔 + FE（+ DEP 若容器化部署）|
+| 前端網頁應用 | 本檔 + FE + DEP |
 
-> 凡**容器化部署**之自建服務（含前端、工具服務），一律加載 DEP。
+> 凡**自建且需部署**之服務（含前端、後端、工具服務；依 §DEP-2 須容器化），一律加載 DEP；純 Shell Script（不以服務形式部署）不在此列。
 > 技術選型（框架、語言）非本憲章強制項，建議另見 [`tech-standards.md`](tech-standards.md)（團隊技術標準建議）。
 
 > **載入 ≠ 全部強制**：上表定義「該讀哪些文件」；各條款**實際作為合併條件的範圍，由團隊「目前導入階段」決定**（見 [`README.md`](README.md) 三階段導入）。第一階段僅 **§CP-1～§CP-6 + 最小審查（GV）** 為必要條件，其餘載入內容以參考視之。
@@ -201,7 +201,7 @@
 
 - **適用範圍**：規劃新功能或修改現有功能的 tech plan / task 時。
 - 規劃時 **SHOULD**（Critical / Standard）/ **MAY**（Internal / Experimental）先宣告預計修改的程式架構範圍，至少涵蓋：**受影響的模組、分層**（見 §API-4）、**主要檔案區域**，以及**明確不受影響的範圍**。宣告旨在使 AI agent 與實作者聚焦，避免改動毫不相關之內容。
-- diff 不得包含與 spec 無關之變更；超出已宣告範圍的修改視同 §CP-1 所禁止之無來源變更，**MUST** 回溯更新 spec，或依 §CP-6 記為例外。
+- diff 內的變更 **MUST** 可追溯至 spec（§CP-1，所有分級適用，不以是否宣告為前提）；已宣告影響範圍者，超出宣告範圍的修改 **MUST** 先更新宣告 / spec，或依 §CP-6 記為例外。
 - 宣告結果可作為 §TR-7 ISP 案例設計的受測單元清單。
 - 宣告無固定格式，下列為最小參考範本：
 
@@ -228,7 +228,7 @@
 
 合併閘門分為兩類，依服務風險分級套用（範圍見附錄 B）：
 
-**A. 自動閘門（CI MUST 強制）——僅放可機器驗證的項目：**
+**A. 自動閘門（由 CI 執行；各項強制程度依附錄 B）——僅放可機器驗證的項目：**
 
 - 測試通過、lint、機密掃描、相依套件安全掃描、API / 事件 schema 破壞性變更檢查（schema / contract diff）、容器映像掃描、覆蓋率報告。
 
@@ -283,7 +283,8 @@
 | 相依套件安全掃描 | MUST | MUST | SHOULD | MAY | §TR-3 |
 | 容器映像掃描 | MUST | SHOULD | SHOULD | MAY | §DEP-2 |
 | 審計日誌（敏感 / 關鍵資料後端）| MUST | MUST | SHOULD | MAY | §TR-5 |
-| 結構化日誌 + 分散式追蹤 | MUST | SHOULD | MAY | MAY | §TR-4 / §SVC-4 |
+| 結構化日誌 | MUST | SHOULD | MAY | MAY | §TR-4 |
+| 跨服務 trace context 傳遞 | MUST | MUST | MAY | MAY | §SVC-4 |
 | 對外 API / 契約文件（REST→OpenAPI 等）| MUST | MUST | SHOULD | MAY | §API-2 |
 | schema 破壞性變更檢查 | MUST | MUST | SHOULD | MAY | §SVC-2 |
 | 互動式 API 文件受保護（不匿名公開）| MUST | MUST | MUST | SHOULD | §API-3 |

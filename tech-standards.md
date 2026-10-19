@@ -1,6 +1,6 @@
 # 團隊技術標準建議（Tech Standards）
 
-> 版本：1.3.0｜性質：**建議參考**，非強制憲章。
+> 版本：1.3.1｜性質：**建議參考**，非強制憲章。
 >
 > 本文件提供團隊預設的技術選型建議，協助新專案快速取得一致、可維護的技術基礎。
 > 與 [`constitution.md`](constitution.md) 等憲章不同，本文件條目為 **SHOULD（建議）**——
@@ -71,7 +71,7 @@
 > 多入口僅適用於**同一服務自身的輔助進入點**（該服務的 migration CLI、批次 worker、admin script）。
 > 把兩個原本各自獨立部署的微服務打包進同一顆映像違反 §SVC-7（可獨立部署）。
 
-下列骨架改寫自團隊內部一個微服務後端的 Dockerfile 實務：
+下列為對應上表的 Dockerfile 參考骨架：
 
 ```dockerfile
 # ---- builder：完整 toolchain，產物在此打包 ----
@@ -160,7 +160,7 @@ envsubst < /usr/share/nginx/html/json/config.json.template > /usr/share/nginx/ht
 | 目的 | 建議工具 | 說明 |
 |------|---------|------|
 | Property-Based Testing（PBT）| **fast-check**（Jest / Vitest 生態）| ISP 每個 block 只取一個代表值；PBT 在 block 內隨機採樣並自動縮小反例，兩者**互補而非替代**。適合有明確不變量的邏輯（如「回傳長度 ≤ 上限」）|
-| Mutation testing | **Stryker**（如 `@stryker-mutator/jest-runner`；Python 可用 `mutmut`）| mutation score 衡量測試「殺得死錯誤」的能力，較覆蓋率更能反映斷言品質（見 §TR-2）|
+| Mutation testing | **Stryker**（依測試框架選 `@stryker-mutator/vitest-runner` / `jest-runner`；Python 可用 `mutmut`）| mutation score 衡量測試「殺得死錯誤」的能力，較覆蓋率更能反映斷言品質（見 §TR-2）|
 
 建議工作流：跑 coverage 找**漏測**的程式區域 → 跑 mutation testing 找**弱斷言** → 將存活的 mutants 作為補強測試的具體目標，迭代至收斂。以 AI agent 產生測試時，存活 mutants 是比「提高測試品質」更有效的具體回饋。
 

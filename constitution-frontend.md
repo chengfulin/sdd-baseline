@@ -1,6 +1,6 @@
 # SDD 憲章：前端網頁應用延伸（FE）
 
-> 版本：5.4.0｜本文件為 [`constitution.md`](constitution.md) 之延伸，**須與核心原則（CP）、治理（GV）一併適用**。
+> 版本：5.5.0｜本文件為 [`constitution.md`](constitution.md) 之延伸，**須與核心原則（CP）、治理（GV）一併適用**。
 > RFC 2119 用語定義見核心文件。條款前綴為 `§FE-`。
 
 > **邊界聲明**：本檔只規範前端的**應用面**（UI、元件、前端安全、測試）。**部署、TLS、反向代理、安全標頭落點**見 [`constitution-deployment.md`](constitution-deployment.md)（DEP）。
@@ -44,7 +44,7 @@
   - **容器 / 頁面元件（Container / View）**：負責組裝與互動編排。
   - **API / Service 層（composable 或 service 模組）**：負責對後端的資料存取，**MUST** 集中管理，**MUST NOT** 散落於各展示元件中。
   - **狀態層（Store）**：負責跨元件共用狀態。
-- 路由 **SHOULD** 集中於統一的 router 設定；需要授權的路由 **MUST** 設有 navigation guard（並理解前端守衛僅為 UX，真正授權 **MUST** 由後端把關）。
+- 路由 **SHOULD** 集中管理（統一的 router 設定，或框架內建之檔案式路由慣例）；需要授權的路由 **MUST** 設有 navigation guard（並理解前端守衛僅為 UX，真正授權 **MUST** 由後端把關）。
 
 ### §FE-5 前端安全（XSS 與輸出處理）
 
