@@ -69,9 +69,9 @@ grep -hE "版本：" *.md
 任何**非瑣碎**的憲章調整，遵循「**草案 → 第二方 AI 評估 → 與使用者討論確認 → 才修改 → 驗證**」：
 
 1. **整理草案 / 動機**：說明要改什麼、為什麼、影響哪些檔案與引用。
-2. **取得第二方 AI 評估**：用**另一個 AI agent** 做獨立 review，提供不同視角（避免單一模型盲點）。
-   - 目前管道：**本地 copilot CLI + GPT-5.5**（見第 5 節指令）。
-   - **可替換**為其他工具（如 codex / 其他模型）；只要能讀檔並給出獨立評估即可。
+2. **取得第二方 AI 評估**：judge **至少須為與草案撰寫者不同的模型**，提供不同視角（避免單一模型盲點）。
+   - 預設管道：**Claude 家族內分工——Opus 規劃與撰寫草案，Sonnet 擔任獨立 judge**（見第 5 節）。
+   - **可替換**為跨供應商工具（copilot / codex / 其他模型）；只要能讀檔並給出獨立評估即可，跨供應商時視角差異更大。
 3. **彙整評估重點，與使用者討論**：把第二方意見摘要化（同意/不同意/取捨），**明確標示這是外部 AI 的建議，供權衡**，並提出可選範圍讓使用者選擇。
 4. **使用者確認範圍後才修改**：**MUST NOT** 在未確認前逕行大幅重構。對應 §CP-5（變更需經審查、人為核准）。
 5. **修改後**：跑第 3 節驗證 → 視變更幅度更新版本（§GV-1）→ 更新本檔/README/memory（若結構或政策改變）。
@@ -80,17 +80,28 @@ grep -hE "版本：" *.md
 
 ---
 
-## 5. 第二方 AI 評估指令（copilot CLI + GPT-5.5）
+## 5. 第二方 AI 評估管道（不同模型為 judge）
+
+**硬規則**：judge 使用的模型 **MUST** 與草案撰寫者不同。以 Claude 為例的預設分工：**Opus 負責規劃與修訂草案，Sonnet 擔任獨立 judge**。
+
+### 預設管道：本地 Sonnet agent 當 judge（Claude Code 內建，無外部依賴）
+
+以 Agent 工具啟動全新 context 的獨立 agent（`subagent_type: general-purpose`、`model: sonnet`），prompt 要點：
+
+- 開場定位：「你是獨立的第二方資深架構師 reviewer，請獨立判斷，不要預設草案作者是對的」。
+- 指示它先 `git diff` 檢視工作樹變更 → 完整閱讀 `constitution*.md`、`tech-standards.md`（必要時 `README.md`）→ 以繁體中文條列評估與可執行建議。
+- 評估焦點：是否過於複雜/嚴苛、結構是否合理、條款歸屬（應用面 vs SVC vs DEP）、重複立法、「SHOULD 前件配 MUST 後件」漏洞、與附錄 B 的分級鏡射一致性、缺漏與落地建議。
+- 最後要求明確結論：可直接採用 / 需小幅修改（列具體修改）/ 需重新設計。
+
+### 替代管道：跨供應商 CLI（可用時視角差異更大）
 
 ```bash
-copilot --model gpt-5.5 --allow-all-tools -p "<在此放入評估問題；請對方閱讀本目錄下的 constitution*.md、tech-standards.md、README.md 後，以資深架構師角度用繁體中文條列評估與可執行建議>" 2>/dev/null
+copilot --model gpt-5.5 --allow-all-tools -p "<評估問題，同上要點>" 2>/dev/null
 ```
 
-注意事項：
-- **沙箱**：copilot 需寫入 `~/.copilot`，在沙箱中會出現 `EPERM/EACCES`。需以**停用沙箱**方式執行該指令。
-- **雜訊**：啟動時的 `failed to copy trust settings of system certificate` 屬無害 stderr，可用 `2>/dev/null` 過濾。
-- **模型可換**：`--model` 可改其他可用模型；或改用 codex 等其他 CLI——流程不變，重點是取得**獨立第二意見**。
-- 評估問題建議聚焦：是否過於複雜/嚴苛、結構是否合理、條款歸屬（應用面 vs SVC vs DEP）、缺漏與落地建議。
+- **現況**：copilot CLI 自 2026-07 起被組織 Copilot policy 擋下（`Access denied by policy settings`），暫不可用；若權限恢復可續用。
+- **沙箱**：copilot 需寫入 `~/.copilot`，在沙箱中會出現 `EPERM/EACCES`，需以**停用沙箱**方式執行；啟動時的憑證雜訊屬無害 stderr，可用 `2>/dev/null` 過濾。
+- 亦可改用 codex 等其他 CLI——流程不變，重點是取得**獨立第二意見**。
 
 ---
 
