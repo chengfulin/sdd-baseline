@@ -80,6 +80,7 @@
 
 ### 參考（暫不強制）
 TR、風險分級、API/FE/SH、SVC、DEP 可先瀏覽，但**本階段不作為合併條件**。風險分級的標示在本階段為 **SHOULD**（建議先標，便於晉級），自第二階段起為 MUST。
+- 測試案例設計建議即以 ISP（輸入空間分割）為優先；POC 只需涵蓋主要流程 / 展示情境，詳見 §TR-7。
 
 ### 進入第二階段的條件
 - 團隊已習慣「無 spec 不動工」、PR 連結需求來源。
@@ -112,7 +113,7 @@ TR、風險分級、API/FE/SH、SVC、DEP 可先瀏覽，但**本階段不作為
   - Standard：unit + contract + 關鍵 integration
   - Internal：核心 unit + smoke
   - Experimental：PR 描述驗收即可；具核心商業邏輯者仍依 §CP-4 補最小單元測試
-- **案例設計**（§TR-7）：核心邏輯單元測試以輸入空間分割（ISP）設計（Critical / Standard MUST、Internal SHOULD）；預期結果以 spec 為據（Critical MUST，Standard / Internal SHOULD）。
+- **案例設計**（§TR-7）：測試案例以輸入空間分割（ISP）為優先設計方法——核心邏輯單元測試 Critical / Standard MUST、Internal / Experimental SHOULD；由驗收條件推導之測試各級 SHOULD。涵蓋範圍依分級：Critical / Standard / Internal 為**完整範圍**，Experimental 為**主要流程範圍**（如 POC 只涵蓋展示情境）。預期結果以 spec 為據（Critical MUST，Standard / Internal SHOULD）。
 - 覆蓋率僅作輔助參考（API 建議 statement ≥ 80% / branch ≥ 60%），**不得作為唯一品質門檻**。
 
 ### 參考（暫不強制）
@@ -126,7 +127,7 @@ SVC、DEP 可先讀，本階段不作為合併條件（除非該服務已是微�
 - [ ] 已標示服務風險分級
 - [ ] 變更範圍收斂：diff 僅含與 spec 相關之變更（§CP-1）；新功能 / 修改功能建議宣告影響範圍（§TR-8，Critical / Standard 為 SHOULD）
 - [ ] 依 §TR-2 完成對應分級的測試組合
-- [ ] 核心邏輯單元測試之案例設計符合分級要求（§TR-7；分割表建議附於 spec 或測試檔）
+- [ ] 測試案例設計符合分級之強度與涵蓋範圍（§TR-7；分割表建議附於 spec 或測試檔）
 - [ ] 符合對應應用憲章（API / FE / SH）
 - [ ] CI 自動閘門：測試、lint、機密掃描通過（§GV-3）；Critical / Standard 另須相依套件安全掃描通過（§TR-3）
 
