@@ -7,7 +7,7 @@
 
 ## 1. 這個 repo 是什麼
 
-團隊的 **Spec-Driven Development（SDD）憲章**，採「**核心原則 + 服務風險分級 + 應用/基礎設施延伸**」結構，並以**前綴式條款編號**組織。對外採用方式見 [`README.md`](README.md)（三階段循序導入，預設第一階段）。
+**實驗範例**：提供個人或團隊作為 **Spec-Driven Development（SDD）憲章**的參考基礎（MIT License），採「**核心原則 + 服務風險分級 + 應用/基礎設施延伸**」結構，並以**前綴式條款編號**組織。對外採用方式見 [`README.md`](README.md)（三階段循序導入，預設第一階段）。
 
 ### 檔案地圖
 
@@ -20,7 +20,7 @@
 | [`constitution-microservice.md`](constitution-microservice.md) | SVC | 跨服務治理（契約/事件/追蹤/韌性/資料邊界/並行/生命週期）|
 | [`constitution-deployment.md`](constitution-deployment.md) | DEP | 部署與基礎設施（容器/Compose/第三方/DB/儲存/代理）|
 | [`tech-standards.md`](tech-standards.md) | —（獨立版本）| 技術選型建議（非強制 SHOULD）|
-| [`README.md`](README.md) | — | 團隊三階段導入指南 |
+| [`README.md`](README.md) | — | 定位說明與三階段導入指南 |
 
 ### 三個邊界（搬移條款時務必遵守）
 - **應用延伸（API/FE/SH）**：只規範該應用本身的設計與行為。
